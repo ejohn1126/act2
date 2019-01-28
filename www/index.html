@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Ricicloni</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <meta name="msapplication-tap-highlight" content="no"/>
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
+        <link href="css/styles.css" type="text/css" rel="Stylesheet" />
+        <link href="css/jquery.mmenu.css" type="text/css" rel="Stylesheet" />
+        <link href="css/jquery.timepicker.css" type="text/css" rel="Stylesheet" />
+    </head>
+
+    <body style="display:none;">
+        <div class="topbar">
+            <img id="menuTrigger" class="menu-trigger" src="images/menu.png">
+            <img id="backTrigger" class="back-trigger" src="images/back.png" style="display:none;">
+            <h2 class="title"></h2>
+        </div>
+        <div class="contentPage">
+            <!--Start Page-->
+            <div data-bind="page: {id: 'start', afterShow: afterShowHome}">
+                <div id="pnlHome" class="page">
+                    <div id="wrpHome">
+                        <div class="content">
+                            <h2 class="zone" data-bind="text: calendarName"></h2>
+                            <div class="zone" data-bind="text: zoneName"></div>
+                            <div class="waste">
+                                <ul data-bind="foreach: nextPickups">
+                                    <li><span data-bind="text: longFormatDate(Date)"></span>
+                                        <ul data-bind="foreach: Pickups">
+                                            <li><img data-bind="attr: {src: wasteIcon(WasteId)}" class="wasteIcon"><span data-bind="text: WasteName"></span></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="pusher">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pnlZone" class="page">
+                    <div id="wrpZone">
+                        <div class="content">
+                            <img src="images/inactive.jpg" width="100%">
+                            <p>Cerca il tuo comune nell'elenco. Se non è presente potresti inserire tu stesso il calendario!
+                               Naviga sul <a href="javascript:window.open('http://ricicloni.ingeniumsoft.com', '_blank', 'location=yes');">portale di Ricicloni</a>, registrati e crea il calendario per la tua zona. E' facile e gratuito!</p>
+                            <div style="text-align:center;margin-top:10px;margin-bottom:48px;">
+                                <a class="big button green" data-bind="click: activateApp">Attiva</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Zone List page-->
+            <div data-bind="page: {id: 'zoneList', afterShow: afterShowZoneList}">
+                <div id="pnlZoneList" class="page">
+                    <div id="wrpZoneList">
+                        <div>
+                            <div style="padding: 10px 0px 0px 10px;">
+                                <h2 class="zone" >Zone di raccolta</h2>
+                                <p>Seleziona la zona dall'elenco per scaricare il calendario.</p>
+                            </div>
+                            <ul data-bind="foreach: zones" class="scrollerCal">
+                                <li>
+                                    <a data-bind="click: $root.selectZone">
+                                        <div class="scrollerText">
+                                            <div data-bind="text: Name, attr: {'class': 'zoneName'}"></div>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Raccolta giornaliera-->
+            <div data-bind="page: {id: 'dayPickups', afterShow: afterShowDayPickups}">
+                <div class="page">
+                    <div id="wrpDaily">
+                        <div class="content">
+                            <h2 class="zone" data-bind="text: calendarName"></h2>
+                            <div class="zone" data-bind="text: zoneName"></div>
+                            <div class="waste">
+                                <ul>
+                                    <li><div data-bind="text: detailDate"></div>
+                                        <ul data-bind="foreach: selectedPickups, visible: !selectedPickups().length==0">
+                                            <li><img data-bind="attr: {src: wasteIcon(WasteId)}" class="wasteIcon"><span data-bind="text: WasteName"></span></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div data-bind="visible: selectedPickups().length==0">
+                                <p>Non è previsto nessun tipo di raccolta</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Calendar Page-->
+            <div data-bind="page: {id: 'calendar', afterShow: afterShowCalendar}">
+                <div class="page">
+                    <div id="wrpCalendar">
+                        <div>
+                            <h2 class="zone" style="padding: 10px 0px 0px 10px;" data-bind="text: calendarName"></h2>
+                            <div class="monthControl">
+                                <img data-bind="click: prevMonth" class="prevIcon" src="images/prevArrow.png" alt="Mese precedente">
+                                <div class="dayName" data-bind="text: monthName"></div>
+                                <img data-bind="click: nextMonth" class="nextIcon" src="images/nextArrow.png" alt="Mese successivo">
+                            </div>
+                            <ul data-bind="foreach: selectedMonth, visible: selectedMonth().length!=0" class="scrollerCal">
+                                <li data-bind="attr: {style: getBackgroundClass(Date)}">
+                                    <a data-bind="click: $root.selectDay">
+                                        <div class="scrollerText">
+                                            <div data-bind="text: formatDay(Date), attr: {'class': getClass(Date)}"></div>
+                                        </div>
+                                        <div class="rightScrollerIcon" data-bind="foreach: Pickups">
+                                            <img data-bind="attr: {src: wasteIcon(WasteId)}" class="wasteIcon">
+                                        </div>
+                                        <div class="clear"></div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Dictionary-->
+            <div data-bind="page: {id: 'dictionary', afterShow: afterShowDictionary}">
+                <div class="page">
+                    <div id="wrpDictionary">
+                        <div class="content">
+                            <h2 class="zone">Dizionario dei rifiuti</h2>
+                            <ul data-bind="foreach: viewModel.dictionaryData(), visible: viewModel.dictionaryData().length>0" class="none">
+                                <li>
+                                    <img data-bind="attr: {src: wasteIcon(Id())}" class="wasteIcon"><span data-bind="text: Name" class="normalWaste"></span>
+                                    <ul data-bind="foreach: Items" class="disc">
+                                        <li>
+                                            <span data-bind="text: Description" class="smallWaste"></span>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <p data-bind="visible: viewModel.dictionaryData().length==0">
+                                Il dizionario dei rifiuti per la zona selezionata non è presente.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Settings-->
+            <div data-bind="page: {id: 'settings', afterShow: afterShowSettings}">
+                <div class="page">
+                    <div id="wrpSettings">
+                        <div class="content">
+                            <h2 class="zone">Impostazioni</h2>
+                            <p>Scegli l'orario in cui viene notificata la raccolta ed i rifiuti per i quali attivare la funzionalità.</p>
+                            <div style="text-align:center;margin-bottom:10px;">
+                                <a class="big button green" data-bind="click: goToNotification">Notifiche</a>
+                            </div>
+                            <p>Resetta i dati del calendario, gli avvisi e permette di selezionare una nuova zona di raccolta.</p>
+                            <div style="text-align:center;margin-bottom:10px;">
+                                <a class="big button green" data-bind="click: clearData">Reset</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Notification-->
+            <div data-bind="page: {id: 'notification', afterShow: afterShowNotification}">
+                <div class="page">
+                    <div id="wrpNotifications">
+                        <div class="content">
+                            <h2 class="zone">Notifiche</h2>
+                            <p>Orario in cui viene notificata la raccolta il giorno prima della stessa.</p>
+                            <div class="monthControl">
+                                <img data-bind="click: prevHour" class="prevIcon" src="images/prevArrow.png" alt="Ora precedente">
+                                <div class="dayName" data-bind="text: hourName"></div>
+                                <img data-bind="click: nextHour" class="nextIcon" src="images/nextArrow.png" alt="Ora successiva">
+                            </div>
+                            <p>Seleziona i rifiuti per i quali viene notificata la raccolta il giorno prima della stessa.</p>
+                            <ul id="chkWastes" data-bind="foreach: viewModel.getWastes()" class="none">
+                                <li data-bind="attr:{id:'W'+Id}" class="wasteCheck"><img data-bind="attr: {src: wasteIcon(Id)}" class="wasteIcon"><span data-bind="text: Name" class="smallWaste"></span></li>
+                            </ul>
+                            <div style="text-align:center;margin-bottom:10px;">
+                                <a class="big button green" data-bind="click: saveNotification">Salva</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--About-->
+            <div data-bind="page: {id: 'about', afterShow: afterShowAbout}">
+                <div class="page">
+                    <div id="wrpAbout">
+                        <div class="content">
+                            <h2 class="zone">Informazioni</h2>
+                            <p>Ricicloni, applicazione mobile per la raccolta differenziata.</p>
+                            <p>Copyright 2012-2014 Ingenium s.a.s.</p>
+                            <p>Versione 1.4.0.0</p>
+                            <p>Per informazioni sul progetto Ricicloni, contattaci su:</p>
+                            <p>
+                                <a href="mailto:info@ingeniumsoft.com" style="margin-right:10px;">
+                                    <img src="images/email.png" alt="Email" width="48" height="48" border="0">
+                                </a>
+                                <a href="javascript:window.open('http://ricicloni.ingeniumsoft.com', '_blank', 'location=yes');" style="margin-right:10px;">
+                                    <img src="images/web.png" alt="Web" width="48" height="48">
+                                </a>
+                                <a href="javascript:window.open('http://www.facebook.com/ricicloni', '_blank', 'location=yes');" style="margin-right:10px;">
+                                    <img src="images/facebook.png" alt="Facebook" width="48" height="48">
+                                </a>
+                                <a href="javascript:window.open('http://twitter.com/ricicloni', '_blank', 'location=yes');" style="margin-right:10px;">
+                                    <img src="images/twitter.png" alt="Twitter" width="48" height="48">
+                                </a>
+                            </p>
+                            <h3>Ringraziamenti:</h3>
+                            <p>Vogliamo ringraziare per la preziosa collaborazione:</p>
+                            <p>Daniele Morosinotto: calendari delle zone di Camposampiero, Santa Giustina in Colle (PD)</p>
+                            <p>Gioel Stradiotto: calendari Bassano, Cartigliano, Marostica, Mussolente, Cassola, Nove, Romano d'Ezzelino e molti altri (VI)</p>
+                            <p>Luca del Puppo, calendario Cappella Maggiore (TV)</p>
+                            <p>Tutti gli utenti che con grande disponibilità ci hanno dato suggerimenti e idee per migliorare Ricicloni.</p>
+                            <p>Ricordiamo inoltre a tutti che <strong>Ricicloni ha bisogno di farsi conoscere</strong>. L'app è gratuita per l'utente,
+                                vi chiediamo solo di parlarne ai vostri amici, di fare un "Like" su Facebook e di farla conoscere il più possibile.
+                                Solo così potremo continuare a mantenere aggiornati i calendari e ad aggiungerne di nuovi. <strong>Grazie!</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Signal-->
+            <div data-bind="page: {id: 'signal', afterShow: afterShowSignal}">
+                <div class="page">
+                    <div id="wrpSignal">
+                        <div class="content">
+                            <h2 class="zone">Segnala rifiuti abbandonati</h2>
+                            <div style="text-align:center;">
+                                <img id="signalPhoto" style="width:200px;" src="images/SignalPhoto.png" data-bind="click: takePhoto">
+                            </div>
+                            <p>Fotografa i rifiuti abbandonati. Pubblicheremo foto e coordinate nel portale di Ricicloni ed invieremo una mail di segnalazione al consorzio responsabile della tua zona di raccolta
+                            <br/>La segnalazione è geolocalizzata ed è <strong>assolutamente anonima</strong>.</p>
+                            <div style="text-align:center;margin-top:10px;">
+                                <a class="big button green" data-bind="click: performSignal">Segnala</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ajaxLoaderContainer" class="ajaxLoader">
+                <img src="images/ajax-loader.gif" width="24" height="24" />
+            </div>
+
+            <nav id="menu">
+                <ul>
+                    <li><a href="#" onclick="viewModel.goHome()"><img src="images/Home.png" class="menuIcon"><span class="menuText">Home</span></a></li>
+                    <li><a href="#" onclick="viewModel.goToday()"><img src="images/today.png" class="menuIcon"><span class="menuText">Oggi</span></a></li>
+                    <li><a href="#" onclick="viewModel.goTomorrow()"><img src="images/tomorrow.png" class="menuIcon"><span class="menuText">Domani</span></a></li>
+                    <li><a href="#" onclick="viewModel.goCalendar()"><img src="images/Date.png" class="menuIcon"><span class="menuText">Calendario</span></a></li>
+                    <li><a href="#" onclick="viewModel.goDictionary()"><img src="images/Dictionary.png" class="menuIcon"><span class="menuText">Dizionario</span></a></li>
+                    <li><a href="#" onclick="viewModel.goSignal()"><img src="images/Photo.png" class="menuIcon"><span class="menuText">Segnala</span></a></li>
+                    <li><a href="#" onclick="viewModel.goSettings()"><img src="images/settings.png" class="menuIcon"><span class="menuText">Impostazioni</span></a></li>
+                    <li><a href="#" onclick="viewModel.goAbout()"><img src="images/Information.png" class="menuIcon"><span class="menuText">Informazioni</span></a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="bottombar">
+            <a href="javascript:window.open('http://www.ingeniumsoft.com/mobile/ad.html', '_blank', 'location=yes');" style="width:100%;display:block;height:48px;">
+                <img src="images/IngeniumLogo.png" height="40" style="margin:4px;float:left;border:0px;"/>
+                <div style="margin:4px;float:left;color:#000000;margin-top:5px;width:50%;font-size:0.7em;">
+                    <div>Progettiamo e realizziamo app mobile multipiattaforma per il tuo business.</div>
+                </div>
+            </a>
+        </div>
+    </body>
+
+    <script src="js/iscroll.js"></script>
+    <script src="js/fastclick.js"></script>
+    <script src="js/date-it-IT.js"></script>
+    <script src="js/json2.js"></script>
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/jquery.timepicker.min.js"></script>
+    <script src="js/underscore-min.js"></script>
+    <script src="js/knockout-2.2.0.js"></script>
+    <script src="js/pager.min.js"></script>
+    <script src="js/cordova-2.7.0.js"></script>
+    <script src="js/ServiceProxy.js"></script>
+    <script src="js/LocalNotification.js"></script>
+    <script src="js/jquery.mmenu.min.js"></script>
+    <script src="js/Program.js"></script>
+</html>
